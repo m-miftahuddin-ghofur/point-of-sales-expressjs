@@ -60,7 +60,7 @@ module.exports = {
     searchProduct: (req, res) => {
         productModel
           .searchProduct (req)
-          .then (response => {
+          .then (response => { 
             form.success (res, 200, response);
           })
           .catch (error => {

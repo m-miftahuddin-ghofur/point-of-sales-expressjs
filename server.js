@@ -7,7 +7,7 @@ const cors = require ('cors');
 const Router = require ('./src/Routes/index');
 
 const server = express ();
-const port = 3000;
+const port = process.env.PORT;
 const nodeEnv = 'Development';
 
 server.listen (port, () => {

@@ -5,10 +5,16 @@ const pagination = (req) => {
     const limit = Number(req.query.perpage) || 10 ;
     const page = req.query.page || 1;
     const offset = limit * (page-1);
-    
-    //console.log(limit);
-    
+
     return {limit, offset};
+}
+
+const search = (req,sql) => {
+    const keyword = req.query.name; 
+    if(keyword != null) {
+        sql += ' AND products.name LIKE ?';
+    }
+    return {sql, keyword};
 }
 
 const sortBy = (req, sql) => {
@@ -35,9 +41,11 @@ module.exports = {
             let sql = 'SELECT products.id, products.name, products.discription, products.image, category.category, products.price, products.quantity, products.date_added, products.date_updated FROM products , category WHERE products.category_id=category.id ';
             const page = pagination(req);
             sql = sortBy(req, sql);
-            connection.query (sql + ' LIMIT ? OFFSET ?' ,
-                [page.limit, page.offset],
-                (err, response) => {
+            const searchName = search(req,sql);
+            
+         //   let data = searchName.keyword == null ? [page.limit, page.offset] : ['%' + req.query.name + '%', page.limit, page.offset] ;
+            let data = [page.limit, page.offset];
+            connection.query (sql + ' LIMIT ? OFFSET ?' ,data, (err, response) => {
                 if (!err){
                     resolve(response);
                 }else{
@@ -69,7 +77,6 @@ module.exports = {
           (err,response)=> {
                 if (response.length > 0){
                     let sql = 'INSERT INTO products SET name=?, discription=?, image=?, category_id=?, price=?, quantity=? ';
-                    //let sql = 'INSERT INTO products (name, description, quantity, image, category_id, price) SELECT ?, ?, ?, ?, ?, ? WHERE EXISTS (SELECT * FROM category WHERE id=?)';
                     let data =  [body.name, body.discription, body.image, body.category_id, body.price, body.quantity];
                     connection.query (sql, data,
                         (err, response) => {
@@ -139,9 +146,9 @@ module.exports = {
     searchProduct: (req) => {
         return new Promise ((resolve,reject) => {
             connection.query ('SELECT * FROM products WHERE name LIKE ?', 
-            ['%' + req.query.name +'%'],
-            (err, response) => {
-                if (!err){
+            ['%' + req.query.name + '%'],
+            (err, response) => { 
+                if (!err){ 
                     resolve(response);
                 }else{
                     reject (err);
@@ -157,7 +164,6 @@ module.exports = {
             connection.query (sql,
             [body.quantity , body.id],
             (err,response) => {
-                console.log(body.quantity,body.id);
                 if (!err) {
                     resolve (response);
                 }else{
