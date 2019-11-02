@@ -29,7 +29,7 @@ module.exports = {
         productModel
           .postProduct (req)
           .then (response => {
-            form.success(res,200, "Succes Add Product!!")
+            form.success(res,200, response)
             //res.json(response);
           })
           .catch (error => {
@@ -40,8 +40,8 @@ module.exports = {
     deleteProduct: (req, res) => {
         productModel
         .deleteProduct (req)
-        .then (response => {
-            form.success(res,200,"Delete Product Succesfully!");
+        .then (response => {            
+            form.success(res,200,{id:parseInt(req.params.id)});
         }).catch(error=>{
           console.log (error);
           formError.errorPage (res, error);
@@ -51,10 +51,10 @@ module.exports = {
         productModel
         .updateProduct (req)
         .then (response => {
-            form.success(res,200,"update Product Sucessfully!");
+            form.success(res,200,response);
         }).catch(error=>{
             console.log(error);
-            formError.errorPage (res, error);
+            formError.errorPage (res,400, error);
         })
     },
     searchProduct: (req, res) => {

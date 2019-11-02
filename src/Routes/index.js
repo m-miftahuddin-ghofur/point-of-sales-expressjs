@@ -27,8 +27,10 @@ const validatorUser = (req,res,next) => {
 }
 
 
-Router.use ('/category',validatorUser,category);
-Router.use ('/product', validatorUser,product);
+Router.use ('/category',category);
+// Router.use ('/category',validatorUser,category);
+Router.use ('/product', product);
+// Router.use ('/product', validatorUser,product);
 Router.use ('/transaction', validatorUser,transaction);
 Router.use ('/user' , user);
 

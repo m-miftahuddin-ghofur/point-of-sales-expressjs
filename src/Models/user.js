@@ -6,12 +6,12 @@ module.exports = {
     registerUser : req => {
         const body = req.body ;
         const pass = bcrypt.hashSync(body.password, salt)
-        console.log(pass);
+        
         
         return new Promise((resolve,reject) => {
             connection.query('INSERT INTO user SET name=?, username=?, password = ?',
             [body.name, body.username, pass],
-            (err,response) =>{ console.log(pass);
+            (err,response) =>{
             
                 if(!err) {
                     resolve(response);

@@ -13,4 +13,3 @@ module.exports = {
       res.json (form);
     },
 };
-  

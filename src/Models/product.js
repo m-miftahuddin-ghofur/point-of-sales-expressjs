@@ -2,7 +2,7 @@ const connection = require('../Configs/connect');
 const category = require('./category')
 
 const pagination = (req) => {
-    const limit = Number(req.query.perpage) || 10 ;
+    const limit = Number(req.query.perpage) || 30 ;
     const page = req.query.page || 1;
     const offset = limit * (page-1);
 
@@ -12,9 +12,9 @@ const pagination = (req) => {
 const search = (req,sql) => {
     const keyword = req.query.name; 
     if(keyword != null) {
-        sql += ' AND products.name LIKE ?';
+        sql = sql + ' AND products.name LIKE ? ';
     }
-    return {sql, keyword};
+    return sql;
 }
 
 const sortBy = (req, sql) => {
@@ -40,11 +40,12 @@ module.exports = {
         return new Promise ((resolve,reject) => {
             let sql = 'SELECT products.id, products.name, products.discription, products.image, category.category, products.price, products.quantity, products.date_added, products.date_updated FROM products , category WHERE products.category_id=category.id ';
             const page = pagination(req);
+            sql = search(req,sql);
             sql = sortBy(req, sql);
-            const searchName = search(req,sql);
             
-         //   let data = searchName.keyword == null ? [page.limit, page.offset] : ['%' + req.query.name + '%', page.limit, page.offset] ;
-            let data = [page.limit, page.offset];
+            
+           let data = req.query.name != null ?  ['%' + req.query.name + '%', page.limit, page.offset] : [page.limit, page.offset] ;
+            // let data = [page.limit, page.offset];
             connection.query (sql + ' LIMIT ? OFFSET ?' ,data, (err, response) => {
                 if (!err){
                     resolve(response);
@@ -81,7 +82,17 @@ module.exports = {
                     connection.query (sql, data,
                         (err, response) => {
                             if (!err) {
-                                resolve (response);
+                                const id_product=response.insertId
+                                connection.query('SELECT products.id, products.name, products.discription, products.image, category.category, products.price, products.quantity, products.date_added, products.date_updated FROM products , category WHERE products.category_id=category.id AND products.id=?', id_product,
+                                    (err,response) => {
+                                        if(!err){
+                                            resolve(response);
+                                        }else{
+                                            reject(err);
+                                        }
+                                    }
+                                )
+                                // resolve (response);
                             } else {
                                 reject (err);
                             }
@@ -126,7 +137,17 @@ module.exports = {
                         connection.query (sql, data,
                             (err, response) => {
                                 if (!err) {
-                                    resolve (response);
+                                    // const id_product=response.insertId
+                                    connection.query('SELECT products.id, products.name, products.discription, products.image, category.category, products.price, products.quantity, products.date_added, products.date_updated FROM products , category WHERE products.category_id=category.id AND products.id=?', params.id,
+                                        (err,response) => {
+                                            if(!err){
+                                                resolve(response);
+                                            }else{
+                                                reject(err);
+                                            }
+                                        }
+                                    )
+                                    // resolve(response)
                                 } else {
                                     reject (err);
                                 }

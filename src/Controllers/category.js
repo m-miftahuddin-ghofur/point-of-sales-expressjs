@@ -28,7 +28,12 @@ module.exports = {
         categoryModel
           .postCategory (req)
           .then (response => {
-            form.success(res,200, "Success Add Category!!")
+            if(Array.isArray(response)){
+              form.success(res,200, response[0])
+            }else{
+              form.success(res,200, response)
+            }
+            
             //res.json(response);
           })
           .catch (error => {

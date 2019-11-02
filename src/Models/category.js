@@ -1,5 +1,9 @@
 const connection = require('../Configs/connect');
 
+function getCategory(){
+  
+}
+
 module.exports = {
     getCategory: () => {
     return new Promise ((resolve,reject) => {
@@ -35,7 +39,18 @@ module.exports = {
             [body.category],
             (err, response) => {
               if (!err) {
-                resolve (response);
+                connection.query('SELECT * FROM category WHERE id=?',
+                  [response.insertId],
+                    (err2,response2) => {
+                        if (!err) {
+                          resolve(response2);     
+                        }else{
+                            reject (err2);
+                        }
+                    } 
+                  )
+
+              
               } else {
                 reject (err);
               }
@@ -51,7 +66,8 @@ module.exports = {
             [params.id],
             (err, response) => {
               if (!err) {
-                resolve (response);
+                resolve({id:params.id})
+                // resolve (response);
               } else {
                 reject (err);
               }

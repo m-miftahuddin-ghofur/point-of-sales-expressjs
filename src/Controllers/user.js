@@ -28,7 +28,7 @@ module.exports = {
                     if(bcrypt.compareSync(req.body.password, response[0].password)) { 
                     //if(req.body.password ==  response[0].password) { 
                         const token = jwt.sign({id : response[0].id} , secretKey );
-                        form.success(res, {user_id: response[0].id, username:response[0].username, token : token});
+                        form.success(res, 200, {user_id: response[0].id, username:response[0].username, token : token});
                     }else{
 //                    }else{
                         formError.errorPage(res, "Password Incorect!")

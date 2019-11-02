@@ -7,7 +7,8 @@ module.exports = {
     //     };
     //   });
       let form = {
-        error, 
+        error,
+        status 
       };
       res.json (form);
     },
